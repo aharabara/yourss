@@ -14,11 +14,11 @@ doctrine:
                 is_bundle: false
                 type: annotation
                 dir: '%kernel.project_dir%/src/Module/Users/Domain'
-                prefix: 'App\Modules\Users\Domain\User'
+                prefix: 'App\Module\Users\Domain\User'
                 alias: User
             Feed:
                 is_bundle: false
                 type: annotation # @todo migrate later to yml !!!
                 dir: '%kernel.project_dir%/src/Module/Feed/Domain'
-                prefix: 'App\Modules\Feeds\Domain\Feed'
+                prefix: 'App\Module\Feed\Domain\Feed'
                 alias: Feed

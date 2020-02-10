@@ -3,6 +3,10 @@
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+imports:
+    - {resource: ../src/Module/Users/module.yaml}
+    - {resource: ../src/Module/Feed/module.yaml}
+
 parameters:
 
 services:
@@ -17,11 +21,23 @@ services:
         resource: '../src/*'
         exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
-    # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    App\Command\:
+        resource: '../src/Command'
+        tags: ['console.command']
+
+    Symfony\Component\Serializer\Normalizer\PropertyNormalizer:
+        tags: ["serializer.normalizer"]
+
+    Symfony\Component\Serializer\Normalizer\ObjectNormalizer:
+        tags: ["serializer.normalizer"]
+
+    Symfony\Component\Serializer\Normalizer\DateTimeNormalizer:
+        tags: ["serializer.normalizer"]
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

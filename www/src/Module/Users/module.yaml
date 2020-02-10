@@ -1,0 +1,10 @@
+services:
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    public: false
+
+  App\Module\Users\Application\CreateUserHandler:
+  App\Module\Users\Infrastructure\Repository\UserRepository:
+
+

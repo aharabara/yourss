@@ -1,3 +1,40 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+frontend.index:
+    methods: GET
+    path: /
+    controller: \App\Controller\FrontController::test
+
+auth.login:
+    methods: POST
+    path: /login
+    controller: \App\Controller\AuthController::login
+
+auth.logout:
+    methods: POST
+    path: /logout
+    controller: \App\Controller\AuthController::logout
+
+auth.register:
+    methods: POST
+    path: /register
+    controller: \App\Controller\AuthController::register
+
+auth.verify:
+    methods: HEAD
+    path: /verify
+    controller: \App\Controller\AuthController::verify
+
+
+feed.list:
+    methods: GET
+    path: /feed
+    controller: \App\Controller\FeedController::feedList
+
+feed.get:
+    methods: GET
+    path: /feed/{item}
+    controller: \App\Controller\FeedController::feedItem
+
+feed.tags:
+    methods: GET
+    path: /feed/tags
+    controller: \App\Controller\FeedController::feedTags

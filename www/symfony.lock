@@ -93,6 +93,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.3"
     },
+    "php": {
+        "version": "7.4"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -219,6 +222,9 @@
     "symfony/property-access": {
         "version": "v5.0.4"
     },
+    "symfony/property-info": {
+        "version": "v5.0.4"
+    },
     "symfony/routing": {
         "version": "4.2",
         "recipe": {
@@ -265,6 +271,22 @@
     },
     "symfony/stopwatch": {
         "version": "v5.0.4"
+    },
+    "symfony/translation-contracts": {
+        "version": "v2.0.1"
+    },
+    "symfony/validator": {
+        "version": "4.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.3",
+            "ref": "d902da3e4952f18d3bf05aab29512eb61cabd869"
+        },
+        "files": [
+            "config/packages/test/validator.yaml",
+            "config/packages/validator.yaml"
+        ]
     },
     "symfony/var-dumper": {
         "version": "v5.0.4"
