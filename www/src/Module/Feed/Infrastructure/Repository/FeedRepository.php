@@ -2,8 +2,10 @@
 
 namespace App\Module\Feed\Infrastructure\Repository;
 
+use App\Module\Feed\Application\Query\SearchFeedQuery;
 use App\Module\Feed\Domain\Feed;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +21,32 @@ class FeedRepository extends ServiceEntityRepository
         parent::__construct($registry, Feed::class);
     }
 
-    // /**
-    //  * @return Feed[] Returns an array of Feed objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param SearchFeedQuery $query
+     * @return ArrayCollection
+     */
+    public function searchBy(SearchFeedQuery $query): ArrayCollection
     {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $queryBuilder = $this->createQueryBuilder('feed');
 
-    /*
-    public function findOneBySomeField($value): ?Feed
-    {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
+        if (!empty($query->title)) {
+            $queryBuilder
+                ->where('feed.title like :title')
+                ->setParameter(':title', $query->title);
+        }
+
+        if (!empty($query->description)) {
+            $queryBuilder
+                ->where('feed.description like :description')
+                ->setParameter(':description', $query->description);
+        }
+
+        $feeds = $queryBuilder
+            ->setMaxResults($query->limit)
+            ->setFirstResult($query->offset)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
+
+        return new ArrayCollection($feeds);
     }
-    */
 }

@@ -29,6 +29,13 @@ class Feed
     private $title;
 
     /**
+     * @ORM\OneToOne(targetEntity="FeedImage")
+     * @ORM\JoinColumn(name="image_id", referencedColumnName="id")
+     * @var FeedImage
+     */
+    private $image;
+
+    /**
      * @ORM\Column(type="string")
      * @var string
      */
@@ -86,7 +93,7 @@ class Feed
     /**
      * @return FeedItem[]
      */
-    public function getItem(): array
+    public function getItems()
     {
         return $this->item;
     }
@@ -98,6 +105,14 @@ class Feed
     public function addItem(FeedItem $item): void
     {
         $this->item[] = $item;
+    }
+
+    /**
+     * @return FeedImage|null
+     */
+    public function getImage(): ?FeedImage
+    {
+        return $this->image;
     }
 
 }

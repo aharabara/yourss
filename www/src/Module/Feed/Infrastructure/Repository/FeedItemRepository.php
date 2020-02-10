@@ -2,8 +2,10 @@
 
 namespace App\Module\Feed\Infrastructure\Repository;
 
+use App\Module\Feed\Application\Query\SearchFeedItemQuery;
 use App\Module\Feed\Domain\FeedItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +21,44 @@ class FeedItemRepository extends ServiceEntityRepository
         parent::__construct($registry, FeedItem::class);
     }
 
-    // /**
-    //  * @return FeedItem[] Returns an array of FeedItem objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param SearchFeedItemQuery $query
+     * @return ArrayCollection
+     */
+    public function searchBy(SearchFeedItemQuery $query): ArrayCollection
     {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $queryBuilder = $this->createQueryBuilder('feed_item');
 
-    /*
-    public function findOneBySomeField($value): ?FeedItem
-    {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
+        if (!empty($query->title)) {
+            $queryBuilder
+                ->where('feed_item.title like :title')
+                ->setParameter(':title', $query->title);
+        }
+
+        if (!empty($query->description)) {
+            $queryBuilder
+                ->where('feed_item.description like :description')
+                ->setParameter(':description', $query->description);
+        }
+
+        if (!empty($query->categories)) {
+            $queryBuilder
+                ->where('feed_item.categories IN (:categories)')
+                ->setParameter(':categories', $query->categories);
+        }
+
+        if (!empty($query->categories)) {
+            $queryBuilder
+                ->where('feed_item.pub_date = :pub_date')
+                ->setParameter(':pub_date', $query->pubDate);
+        }
+
+        $feedItems = $queryBuilder
+            ->setMaxResults($query->limit)
+            ->setFirstResult($query->offset)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
+
+        return new ArrayCollection($feedItems);
     }
-    */
 }
