@@ -3,10 +3,13 @@
 namespace App\Module\Feed\Domain;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * @ORM\Entity(repositoryClass="App\Module\Feed\Infrastructure\Repository\FeedRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Feed
 {
@@ -54,6 +57,18 @@ class Feed
      */
     private $item;
 
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     * @var \DateTimeImmutable
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     * @var \DateTimeImmutable
+     */
+    private $updatedAt;
+
     public function __construct()
     {
         $this->item = new ArrayCollection();
@@ -97,9 +112,9 @@ class Feed
     }
 
     /**
-     * @return FeedItem[]|ArrayCollection
+     * @return FeedItem[]|ArrayCollection|PersistentCollection
      */
-    public function getItems(): ArrayCollection
+    public function getItems(): Collection
     {
         return $this->item;
     }
@@ -134,6 +149,38 @@ class Feed
             }
         }
         return false;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAt(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * @ORM\PreUpdate()
+     */
+    public function setUpdatedAt(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 
 }

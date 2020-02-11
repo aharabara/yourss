@@ -65,4 +65,23 @@ class FeedRepository extends ServiceEntityRepository
         $this->entityManager->persist($feed);
         $this->entityManager->flush();
     }
+
+    /**
+     * @param \DateTimeImmutable $lastUpdateAfter
+     * @param int $offset
+     * @param int $limit
+     * @return ArrayCollection
+     */
+    public function getFeedsToUpdate(\DateTimeImmutable $lastUpdateAfter, int $offset, int $limit): ArrayCollection
+    {
+        $feeds = $this
+            ->createQueryBuilder('feed')
+            ->where('feed.updatedAt < :lastUpdateBefore')
+            ->setParameter('lastUpdateBefore', $lastUpdateAfter)
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
+        return new ArrayCollection($feeds);
+    }
 }

@@ -23,6 +23,7 @@ class FeedItemMapper
         $dto->title = $item->getTitle();
         $dto->description = $item->getDescription();
         $dto->link = $item->getLink();
+        $dto->category = $item->getCategory();
         $dto->pub_date = $item->getPubDate()->format('Y-m-d');
 
         return $dto;

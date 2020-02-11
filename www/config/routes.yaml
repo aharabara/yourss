@@ -29,10 +29,10 @@ feed.list:
     path: /feed
     controller: \App\Controller\FeedController::feedList
 
-feed.get:
+feed.full:
     methods: GET
-    path: /feed/{item}
-    controller: \App\Controller\FeedController::feedItem
+    path: /feed/{id}
+    controller: \App\Controller\FeedController::feed
 
 feed.tags:
     methods: GET

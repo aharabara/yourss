@@ -2,69 +2,47 @@
 
 namespace App\Command;
 
-use App\Module\Feed\Application\DocumentDTO;
-use App\Module\Feed\Application\Mapper\FeedItemMapper;
-use App\Module\Feed\Infrastructure\Repository\FeedRepository;
+use App\Module\Feed\Application\Handler\GatherFeedItemsCommand;
+use App\Module\Feed\Application\Handler\GatherFeedItemsHandler;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class FeedGathererCommand extends Command
 {
-
-    /**
-     * @var FeedRepository
-     */
-    private $feedRepository;
-
     protected static $defaultName = 'feed:gather';
-    /**
-     * @var SerializerInterface
-     */
-    private SerializerInterface $serializer;
-    /**
-     * @var FeedItemMapper
-     */
-    private FeedItemMapper $itemMapper;
-    /**
-     * @var string
-     */
-    private string $name;
 
-    public function __construct(
-        string $name = null,
-        FeedItemMapper $itemMapper,
-        SerializerInterface $serializer,
-        FeedRepository $feedRepository
-    )
+    private GatherFeedItemsHandler $gatherFeedItemsHandler;
+
+    public function __construct(string $name = null, GatherFeedItemsHandler $gatherFeedItemsHandler)
     {
         parent::__construct($name);
-        $this->feedRepository = $feedRepository;
-        $this->serializer = $serializer;
-        $this->itemMapper = $itemMapper;
+        $this->gatherFeedItemsHandler = $gatherFeedItemsHandler;
+    }
+
+    protected function configure()
+    {
+        $this->addArgument('limit', InputArgument::REQUIRED, 'Amount of feed to handle.');
+        $this->addArgument('page', InputArgument::REQUIRED, 'Used to calculate offset from $limit * $page');
+        $this->addArgument('last-update-before', InputArgument::REQUIRED, 'Get items that were updated before $lastUpdateBefore. (time string)');
+        parent::configure();
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $feeds = $this->feedRepository->findAll();
-        foreach ($feeds as $feed) {
-            $output->writeln("Loading feed: <comment>{$feed->getTitle()}</comment>");
-            /** @var DocumentDTO $document */
-            $document = $this->serializer->deserialize(file_get_contents($feed->getLink()), DocumentDTO::class, 'xml');
-            /* @TODO save items */
-            if (!empty($document->channel->item)) {
-                foreach ($document->channel->item as $item) {
-                    /** @fixme move to handler*/
-                    if(!$feed->hasItem($item->link)){
-                        $itemModel = $this->itemMapper->toModel($item);
-                        $feed->addItem($itemModel);
-                        $output->writeln("<info> - {$itemModel->getTitle()}</info> was added.");
-                    }
-                }
-            }
-            $this->feedRepository->save($feed);
-        }
+        $page = $input->getArgument('page');
+        $limit = $input->getArgument('limit');
+        $lastUpdateBefore = (new \DateTimeImmutable())->modify($input->getArgument('last-update-before'));
+
+        $page = $page > 0 ? $page : 1;
+        $limit = $limit > 0 ? $limit : 1;
+
+        $command = new GatherFeedItemsCommand();
+        $command->lastUpdateBefore = $lastUpdateBefore;
+        $command->limit = $limit;
+        $command->offset = ($page - 1) * $limit;
+        $this->gatherFeedItemsHandler->handle($command);
         return 0;
     }
 }
