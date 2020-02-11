@@ -8,7 +8,7 @@ class FeedItemDTO
 {
 
     /**
-     * @var int|null
+     * @var string|null
      */
     public $id;
 
@@ -28,7 +28,7 @@ class FeedItemDTO
     public $link;
 
     /**
-     * @var string
+     * @var string[]
      */
     public $category;
 

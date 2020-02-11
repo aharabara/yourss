@@ -2,6 +2,7 @@
 
 namespace App\Module\Feed\Domain;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,7 +37,7 @@ class Feed
     private $image;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      * @var string
      */
     private $description;
@@ -48,10 +49,15 @@ class Feed
     private $copyright;
 
     /**
-     * @ORM\OneToMany(targetEntity="\App\Module\Feed\Domain\FeedItem", mappedBy="feed")
-     * @var FeedItem[]
+     * @ORM\OneToMany(targetEntity="\App\Module\Feed\Domain\FeedItem", mappedBy="feed", cascade={"persist"})
+     * @var FeedItem[]|ArrayCollection
      */
-    private $item = [];
+    private $item;
+
+    public function __construct()
+    {
+        $this->item = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -91,9 +97,9 @@ class Feed
     }
 
     /**
-     * @return FeedItem[]
+     * @return FeedItem[]|ArrayCollection
      */
-    public function getItems()
+    public function getItems(): ArrayCollection
     {
         return $this->item;
     }
@@ -105,6 +111,7 @@ class Feed
     public function addItem(FeedItem $item): void
     {
         $this->item[] = $item;
+        $item->setFeed($this);
     }
 
     /**
@@ -113,6 +120,20 @@ class Feed
     public function getImage(): ?FeedImage
     {
         return $this->image;
+    }
+
+    /**
+     * @param string $link
+     * @return bool
+     */
+    public function hasItem(string $link): bool
+    {
+        foreach ($this->item as $item) {
+            if ($item->getLink() === $link){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

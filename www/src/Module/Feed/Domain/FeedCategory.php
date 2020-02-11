@@ -5,14 +5,15 @@ namespace App\Module\Feed\Domain;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Module\Feed\Infrastructure\Repository\FeedImageRepository")
+ * @ORM\Entity(repositoryClass="App\Module\Feed\Infrastructure\Repository\FeedCategoryRepository")
  */
-class FeedImage
+class FeedCategory
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @var int|null
      */
     private $id;
 
@@ -20,14 +21,7 @@ class FeedImage
      * @ORM\Column(type="string")
      * @var string
      */
-    private $url;
-
-    /**
-     * @ORM\Column(type="string")
-     * @var string
-     */
     private $title;
-
 
     public function getId(): ?int
     {
@@ -41,13 +35,4 @@ class FeedImage
     {
         return $this->title;
     }
-
-    /**
-     * @return string
-     */
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
-
 }

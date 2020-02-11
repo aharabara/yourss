@@ -33,7 +33,12 @@ class FeedDTO
     public $copyright;
 
     /**
+     * @var FeedImageDTO
+     */
+    public $image;
+
+    /**
      * @var FeedItemDTO[]
      */
-    public $items;
+    public $item;
 }

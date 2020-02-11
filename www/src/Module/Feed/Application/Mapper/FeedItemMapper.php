@@ -5,11 +5,19 @@ namespace App\Module\Feed\Application\Mapper;
 
 use App\Module\Feed\Application\DTO\FeedItemDTO;
 use App\Module\Feed\Domain\FeedItem;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class FeedItemMapper
 {
+    private DenormalizerInterface $denormalizer;
 
-    public function toDTO(FeedItem $item): FeedItemDTO {
+    public function __construct(DenormalizerInterface $denormalizer)
+    {
+        $this->denormalizer = $denormalizer;
+    }
+
+    public function toDTO(FeedItem $item): FeedItemDTO
+    {
         $dto = new FeedItemDTO();
         $dto->id = $item->getId();
         $dto->title = $item->getTitle();
@@ -18,5 +26,12 @@ class FeedItemMapper
         $dto->pub_date = $item->getPubDate()->format('Y-m-d');
 
         return $dto;
+    }
+
+    public function toModel(FeedItemDTO $dto): FeedItem
+    {
+        /** @var FeedItem $item */
+        $item = $this->denormalizer->denormalize($dto, FeedItem::class);
+        return $item;
     }
 }

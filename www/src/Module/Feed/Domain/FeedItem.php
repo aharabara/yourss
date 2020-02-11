@@ -4,6 +4,7 @@ namespace App\Module\Feed\Domain;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @ORM\Entity(repositoryClass="App\Module\Feed\Infrastructure\Repository\FeedItemRepository")
@@ -14,12 +15,13 @@ class FeedItem
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @var int
+     * @var int|null
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Feed", inversedBy="item")
+     * @ORM\JoinColumn(name="feed_id", referencedColumnName="id")
      * @var Feed
      */
     private $feed;
@@ -37,22 +39,27 @@ class FeedItem
     private $link;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
      * @var string
      */
     private $description;
 
     /**
-     * @ORM\Column(type="string")
-     * @var string
+     * @ORM\Column(type="json")
+     * @var string[]|null
      */
-    private $category;
+    private $category = [];
 
     /**
      * @ORM\Column(type="datetime_immutable")
      * @var DateTimeImmutable
      */
     private $pubDate;
+
+    public function __construct()
+    {
+        $this->pubDate = $this->pubDate ?? new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -84,9 +91,9 @@ class FeedItem
     }
 
     /**
-     * @return string
+     * @return string[]
      */
-    public function getCategory(): string
+    public function getCategory(): array
     {
         return $this->category;
     }
@@ -97,5 +104,13 @@ class FeedItem
     public function getPubDate(): DateTimeImmutable
     {
         return $this->pubDate;
+    }
+
+    /**
+     * @param Feed $feed
+     */
+    public function setFeed(Feed $feed): void
+    {
+        $this->feed = $feed;
     }
 }
